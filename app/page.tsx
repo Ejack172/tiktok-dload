@@ -81,35 +81,56 @@ export default function Home() {
           </p>
         </motion.div>
 
-        <form onSubmit={handleDownload} className="mb-12">
-          <motion.div
-            whileHover={{ scale: 1.01 }}
-            className="relative backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-2 md:p-3 shadow-2xl flex items-center group"
-          >
-            <div className="pl-4 pr-2">
-              <Search className="w-6 h-6 text-gray-400 group-focus-within:text-cyan-400 transition-colors" />
-            </div>
-            <input
-              type="text"
-              placeholder="Paste TikTok URL (e.g., https://tiktok.com/...)"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              className="flex-1 bg-transparent text-white placeholder-gray-500 outline-none text-base md:text-lg w-full py-3"
-            />
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              disabled={loading || !url}
-              className="ml-2 bg-gradient-to-r from-cyan-500 to-pink-500 px-6 md:px-8 py-3 md:py-4 rounded-xl font-bold text-white shadow-lg shadow-pink-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]"
+        {!data ? (
+          <form onSubmit={handleDownload} className="mb-12">
+            <motion.div
+              whileHover={{ scale: 1.01 }}
+              className="relative backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-2 md:p-3 shadow-2xl flex items-center group"
             >
-              {loading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                'Download'
-              )}
+              <div className="pl-4 pr-2">
+                <Search className="w-6 h-6 text-gray-400 group-focus-within:text-cyan-400 transition-colors" />
+              </div>
+              <input
+                type="text"
+                placeholder="Paste TikTok URL (e.g., https://tiktok.com/...)"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                className="flex-1 bg-transparent text-white placeholder-gray-500 outline-none text-base md:text-lg w-full py-3"
+              />
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                disabled={loading || !url}
+                className="ml-2 bg-gradient-to-r from-cyan-500 to-pink-500 px-6 md:px-8 py-3 md:py-4 rounded-xl font-bold text-white shadow-lg shadow-pink-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]"
+              >
+                {loading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  'Download'
+                )}
+              </motion.button>
+            </motion.div>
+          </form>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex justify-center mb-12"
+          >
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                setData(null);
+                setUrl('');
+              }}
+              className="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 px-8 py-4 rounded-xl font-bold text-white transition-all shadow-lg backdrop-blur-md"
+            >
+              <Search className="w-5 h-5 text-cyan-400" />
+              Download Another Video
             </motion.button>
           </motion.div>
-        </form>
+        )}
 
         {data && (
           <motion.div
