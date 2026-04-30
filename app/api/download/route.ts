@@ -30,7 +30,10 @@ export async function POST(req: NextRequest) {
         title: data.data.title,
         author: data.data.author?.unique_id || data.data.author?.nickname || 'Unknown Author',
         thumbnail: data.data.cover,
-        duration: data.data.duration
+        duration: data.data.duration,
+        views: data.data.play_count,
+        likes: data.data.digg_count,
+        uploadDate: data.data.create_time // Unix timestamp
       }
     });
   } catch (error: any) {

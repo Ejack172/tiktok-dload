@@ -9,10 +9,26 @@ interface VideoPreviewProps {
     author: string;
     thumbnail: string;
     duration: number;
+    views?: number;
+    likes?: number;
+    uploadDate?: number;
   };
 }
 
 export default function VideoPreview({ metadata }: VideoPreviewProps) {
+  const formatNumber = (num?: number) => {
+    if (!num) return '0';
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    return num.toString();
+  };
+
+  const formatDate = (timestamp?: number) => {
+    if (!timestamp) return '';
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -50,11 +66,16 @@ export default function VideoPreview({ metadata }: VideoPreviewProps) {
           
           <div className="flex flex-wrap gap-3 justify-center md:justify-start">
             <div className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 text-sm">
-              <span className="text-white font-semibold">1.2M</span> Views
+              <span className="text-white font-semibold">{formatNumber(metadata.views)}</span> Views
             </div>
             <div className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 text-sm">
-              <span className="text-white font-semibold">245K</span> Likes
+              <span className="text-white font-semibold">{formatNumber(metadata.likes)}</span> Likes
             </div>
+            {metadata.uploadDate && (
+              <div className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 text-sm">
+                <span className="text-white font-semibold">{formatDate(metadata.uploadDate)}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
