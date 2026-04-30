@@ -117,13 +117,13 @@ export default function Home() {
             animate={{ opacity: 1 }}
             transition={{ staggerChildren: 0.1 }}
           >
-            <VideoPreview metadata={data.metadata} />
             <CaptionBox captions={data.captions} />
             <DownloadCard 
               downloadLink={data.downloadLink} 
               musicLink={data.musicLink}
               wmLink={data.wmLink}
             />
+            <VideoPreview metadata={data.metadata} />
           </motion.div>
         )}
         

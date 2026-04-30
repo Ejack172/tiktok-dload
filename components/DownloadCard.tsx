@@ -13,7 +13,9 @@ export default function DownloadCard({ downloadLink, musicLink, wmLink }: Downlo
   const getProxyUrl = (url: string, isAudio: boolean) => {
     if (!url) return '';
     const ext = isAudio ? '.mp3' : '.mp4';
-    return `/api/proxy-download?url=${encodeURIComponent(url)}&filename=tiktok_download${ext}`;
+    // Generate a unique ID to prevent the browser's "Download again" popup for same filenames
+    const uniqueId = Math.random().toString(36).substring(2, 9);
+    return `/api/proxy-download?url=${encodeURIComponent(url)}&filename=tiktok_${uniqueId}${ext}`;
   };
 
   const options = [
