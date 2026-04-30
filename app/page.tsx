@@ -1,64 +1,142 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Search, Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import FloatingOrbs from '@/components/FloatingOrbs';
+import VideoPreview from '@/components/VideoPreview';
+import CaptionBox from '@/components/CaptionBox';
+import DownloadCard from '@/components/DownloadCard';
 
 export default function Home() {
+  const [url, setUrl] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<any>(null);
+
+  const handleDownload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!url.includes('tiktok.com')) {
+      toast.error('Please enter a valid TikTok URL', {
+        style: { background: '#333', color: '#fff', border: '1px solid #555' }
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch('/api/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+      
+      const result = await res.json();
+      
+      if (result.success) {
+        setData(result);
+        toast.success('Video ready to download!', {
+          style: { background: '#333', color: '#fff', border: '1px solid #555' }
+        });
+      } else {
+        toast.error(result.error || 'Failed to process video', {
+          style: { background: '#333', color: '#fff', border: '1px solid #555' }
+        });
+      }
+    } catch (err) {
+      toast.error('Something went wrong', {
+        style: { background: '#333', color: '#fff', border: '1px solid #555' }
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="relative min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-black overflow-hidden font-sans">
+      <FloatingOrbs />
+      
+      <main className="relative z-10 max-w-2xl mx-auto px-4 py-16 md:py-24">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-12"
+        >
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2, type: "spring" }}
+            className="inline-block mb-4 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm"
+          >
+            <span className="bg-gradient-to-r from-cyan-400 to-pink-500 bg-clip-text text-transparent font-semibold text-sm">
+              v2.0 Beta Live
+            </span>
+          </motion.div>
+          <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-6 tracking-tight">
+            TikTok <span className="bg-gradient-to-r from-cyan-400 to-pink-500 bg-clip-text text-transparent">Downloader</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-gray-400 text-lg md:text-xl max-w-lg mx-auto">
+            Download TikTok videos in ultra-HD without watermarks. Extract captions instantly.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        </motion.div>
+
+        <form onSubmit={handleDownload} className="mb-12">
+          <motion.div
+            whileHover={{ scale: 1.01 }}
+            className="relative backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-2 md:p-3 shadow-2xl flex items-center group"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            <div className="pl-4 pr-2">
+              <Search className="w-6 h-6 text-gray-400 group-focus-within:text-cyan-400 transition-colors" />
+            </div>
+            <input
+              type="text"
+              placeholder="Paste TikTok URL (e.g., https://tiktok.com/...)"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              className="flex-1 bg-transparent text-white placeholder-gray-500 outline-none text-base md:text-lg w-full py-3"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              disabled={loading || !url}
+              className="ml-2 bg-gradient-to-r from-cyan-500 to-pink-500 px-6 md:px-8 py-3 md:py-4 rounded-xl font-bold text-white shadow-lg shadow-pink-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]"
+            >
+              {loading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                'Download'
+              )}
+            </motion.button>
+          </motion.div>
+        </form>
+
+        {data && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ staggerChildren: 0.1 }}
           >
-            Documentation
-          </a>
-        </div>
+            <VideoPreview metadata={data.metadata} />
+            <CaptionBox captions={data.captions} />
+            <DownloadCard 
+              downloadLink={data.downloadLink} 
+              musicLink={data.musicLink}
+              wmLink={data.wmLink}
+            />
+          </motion.div>
+        )}
+        
+        {!data && !loading && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="text-center text-gray-500 text-sm mt-20"
+          >
+            <p>100% Free • No Watermark • HD Quality • Secure</p>
+          </motion.div>
+        )}
       </main>
     </div>
   );
