@@ -10,10 +10,16 @@ interface DownloadCardProps {
 }
 
 export default function DownloadCard({ downloadLink, musicLink, wmLink }: DownloadCardProps) {
+  const getProxyUrl = (url: string, isAudio: boolean) => {
+    if (!url) return '';
+    const ext = isAudio ? '.mp3' : '.mp4';
+    return `/api/proxy-download?url=${encodeURIComponent(url)}&filename=tiktok_download${ext}`;
+  };
+
   const options = [
-    { label: 'Watermark-free (HD)', icon: Film, quality: 'HD', color: 'from-cyan-500 to-blue-500', url: downloadLink },
-    { label: 'Watermarked Video', icon: Film, quality: 'Standard', color: 'from-blue-500 to-indigo-500', url: wmLink || downloadLink },
-    { label: 'Audio Only (MP3)', icon: Music, quality: 'High', color: 'from-pink-500 to-rose-500', url: musicLink || downloadLink },
+    { label: 'Watermark-free (HD)', icon: Film, quality: 'HD', color: 'from-cyan-500 to-blue-500', url: getProxyUrl(downloadLink, false) },
+    { label: 'Watermarked Video', icon: Film, quality: 'Standard', color: 'from-blue-500 to-indigo-500', url: wmLink ? getProxyUrl(wmLink, false) : getProxyUrl(downloadLink, false) },
+    { label: 'Audio Only (MP3)', icon: Music, quality: 'High', color: 'from-pink-500 to-rose-500', url: musicLink ? getProxyUrl(musicLink, true) : getProxyUrl(downloadLink, true) },
   ].filter(opt => opt.url); // filter out options that don't have URLs
 
   return (
@@ -33,8 +39,8 @@ export default function DownloadCard({ downloadLink, musicLink, wmLink }: Downlo
           <motion.a
             key={index}
             href={option.url}
-            target="_blank"
-            rel="noopener noreferrer"
+            download
+
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             className="relative group overflow-hidden rounded-xl p-[1px]"
